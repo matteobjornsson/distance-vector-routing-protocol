@@ -1,5 +1,7 @@
 import queue
 import threading
+from tabulate import tabulate
+import copy
 
 
 ## wrapper class for a queue of packets
@@ -144,12 +146,39 @@ class Router:
         self.rt_tbl_D = {}      # {destination: {router: cost}}
         print('%s: Initialized routing table' % self)
         self.print_routes()
+
+    # temporary method to use until we get "update routes" working
+    def temp_routes_set_method(self, rt_tbl_D):
+        self.rt_tbl_D = rt_tbl_D
     
         
     ## Print routing table
     def print_routes(self):
-        #TODO: print the routes as a two dimensional table
-        print(self.rt_tbl_D)
+        if not self.rt_tbl_D:
+            print("\n Routing table is empty \n")
+        else:
+            headers = []    # Table headers will be all nodes on the network
+            rowIDs = set()  # Table Row IDs will be all routers on the network 
+            r_table = copy.deepcopy(self.rt_tbl_D) # Table copied to be formatted
+
+            # This for loop gathers the nodes and routers from the routing table
+            for x in r_table:
+                headers.append(x)
+                for y in r_table[x]:
+                    rowIDs.add(y)
+            
+            # This for loop flattens    {destination: {router: cost}} 
+            #                     to    {destination: [cost1, cost2, ...}]} by router
+            temp = []
+            for m in headers:
+                for n in rowIDs:
+                    temp.append(r_table[m][n])
+                r_table[m] = temp
+                temp = []
+            # Add the router name to the header list
+            headers = ['*' + self.name + '*'] + headers
+            # pretty print via tabular
+            print(tabulate(r_table, headers, showindex=rowIDs, tablefmt="fancy_grid"))
 
 
     ## called when printing the object
