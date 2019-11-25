@@ -2,6 +2,7 @@ import queue
 import threading
 from tabulate import tabulate
 import copy
+from numpy import inf
 
 
 ## wrapper class for a queue of packets
@@ -45,7 +46,7 @@ class Interface:
 class NetworkPacket:
     ## packet encoding lengths 
     dst_S_length = 5
-    prot_S_length = 1
+    prot_S_length = 1  #protocol indicates what type of packet (data vs control)
     
     ##@param dst: address of the destination host
     # @param data_S: packet payload
@@ -74,7 +75,7 @@ class NetworkPacket:
     ## extract a packet object from a byte string
     # @param byte_S: byte string representation of the packet
     @classmethod
-    def from_byte_S(self, byte_S):
+    def from_byte_S(cls, byte_S):
         dst = byte_S[0 : NetworkPacket.dst_S_length].strip('0')
         prot_S = byte_S[NetworkPacket.dst_S_length : NetworkPacket.dst_S_length + NetworkPacket.prot_S_length]
         if prot_S == '1':
@@ -82,9 +83,9 @@ class NetworkPacket:
         elif prot_S == '2':
             prot_S = 'control'
         else:
-            raise('%s: unknown prot_S field: %s' %(self, prot_S))
+            raise('%s: unknown prot_S field: %s' %(cls, prot_S))
         data_S = byte_S[NetworkPacket.dst_S_length + NetworkPacket.prot_S_length : ]        
-        return self(dst, prot_S, data_S)
+        return cls(dst, prot_S, data_S)
     
 
     
@@ -143,9 +144,39 @@ class Router:
         #save neighbors and interfeces on which we connect to them
         self.cost_D = cost_D    # {neighbor: {interface: cost}}
         #TODO: set up the routing table for connected hosts
-        self.rt_tbl_D = {}      # {destination: {router: cost}}
-        print('%s: Initialized routing table' % self)
+        self.rt_tbl_D = {}     # {destination: {router: cost}}
+       
         self.print_routes()
+        self.N = []
+        self.R = []
+
+    def update_network_nodes(self, N, R):
+        self.N = N
+        self.R = R
+        print(N)
+        print(R)
+
+    def initialize_routing_table(self): 
+        r_table = {}
+
+        for node in self.N:
+            r_table.update({node: {}})
+            for router in self.R:
+                r_table[node].update({router: inf})
+
+        print(r_table)
+
+        for dest_key, intf_dict in self.cost_D.items():
+            cost = intf_dict[next(iter(intf_dict))]
+            r_table[dest_key].update({self.name : cost})
+            print(r_table)
+        r_table[self.name].update({self.name: 0})
+
+
+        print('%s: Initialized routing table' % self)
+        self.rt_tbl_D = r_table
+
+
 
     # temporary method to use until we get "update routes" working
     def temp_routes_set_method(self, rt_tbl_D):

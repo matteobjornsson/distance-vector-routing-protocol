@@ -3,6 +3,7 @@ import link
 import threading
 from time import sleep
 import sys
+from numpy import inf
 
 ##configuration parameters
 router_queue_size = 0 #0 means unlimited
@@ -20,24 +21,46 @@ if __name__ == '__main__':
     #create routers and cost tables for reaching neighbors
     cost_D = {'H1': {0: 1}, 'RB': {1: 1}} # {neighbor: {interface: cost}}
     #this routing table is a hardcoded dummy table for developing the printing method. 
-    rt_tbl_D = {'H1': {'RA': 1, 'RB': 2}, # {destination: {router: cost}}
-                'H2': {'RA': 4, 'RB': 3}, 
-                'RA': {'RA': 0, 'RB': 1}, 
-                'RB': {'RA': 1, 'RB': 0}}
+    # rt_tbl_D = {'H1': {'RA': 1, 'RB': inf}, # {destination: {router: cost}}
+    #             'H2': {'RA': inf, 'RB': inf}, 
+    #             'RA': {'RA': 0, 'RB': inf}, 
+    #             'RB': {'RA': 1, 'RB': inf}}
     router_a = network.Router(name='RA', 
                               cost_D = cost_D,
                               max_queue_size=router_queue_size)
-    router_a.temp_routes_set_method(rt_tbl_D) # here table is set manually
+    # router_a.temp_routes_set_method(rt_tbl_D) # here table is set manually
     object_L.append(router_a)
 
     cost_D = {'H2': {1: 3}, 'RA': {0: 1}} # {neighbor: {interface: cost}}
+    # rt_tbl_D = {'H1': {'RA': inf, 'RB': inf}, # {destination: {router: cost}}
+    #             'H2': {'RA': inf, 'RB': 3}, 
+    #             'RA': {'RA': inf, 'RB': 1}, 
+    #             'RB': {'RA': inf, 'RB': 0}}
     router_b = network.Router(name='RB', 
                               cost_D = cost_D,
                               max_queue_size=router_queue_size)
 
-    router_b.temp_routes_set_method(rt_tbl_D) # here table is set manually
+    # router_b.temp_routes_set_method(rt_tbl_D) # here table is set manually
     object_L.append(router_b)
     
+    # identify all nodes in network, pass node list and router list to routers
+    N = []
+    R = []
+    for item in object_L:
+        if isinstance(item, network.Host):
+            N.append(item.addr)
+        elif isinstance(item, network.Router):
+            N.append(item.name)
+            R.append(item.name)
+
+    for item in object_L:
+        if isinstance(item, network.Router):
+            item.update_network_nodes(N,R)
+            item.initialize_routing_table()
+    
+
+
+
     #create a Link Layer to keep track of links between network nodes
     link_layer = link.LinkLayer()
     object_L.append(link_layer)
