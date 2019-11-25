@@ -2,11 +2,8 @@ import queue
 import threading
 from tabulate import tabulate
 import copy
-<<<<<<< HEAD
 from numpy import inf
-=======
 from typing import *
->>>>>>> ea8ff643384be0c00b0ea1931685bde447b3696e
 
 
 ## wrapper class for a queue of packets
