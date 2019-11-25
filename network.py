@@ -148,24 +148,25 @@ class Router:
         #TODO: set up the routing table for connected hosts
         self.rt_tbl_D = {}     # {destination: {router: cost}}
         self.N = []
-        self.R = []
+ 
 
     def update_network_nodes(self, N, R):
         self.N = N
-        self.R = R
+
 
     def initialize_routing_table(self): 
         r_table = {}
 
         for node in self.N:
             r_table.update({node: {}})
-            for router in self.R:
+            for router in self.N:
                 r_table[node].update({router: inf})
 
         for dest_key, intf_dict in self.cost_D.items():
             cost = intf_dict[next(iter(intf_dict))]
             r_table[dest_key].update({self.name : cost})
         r_table[self.name].update({self.name: 0})
+
 
         print('%s: Initialized routing table' % self)
         self.rt_tbl_D = r_table
@@ -180,28 +181,28 @@ class Router:
         
     ## Print routing table
     def print_routes(self):
+
         if not self.rt_tbl_D:
             print("\n Routing table is empty \n")
         else:
-            headers = []    # Table headers will be all nodes on the network
-            rowIDs = set()  # Table Row IDs will be all routers on the network 
+            headers = []    # Table headers and rows will be all nodes on the network
+            rowIDs = []  
             r_table = copy.deepcopy(self.rt_tbl_D) # Table copied to be formatted
 
             # This for loop gathers the nodes and routers from the routing table
             for x in r_table:
                 headers.append(x)
-                for y in r_table[x]:
-                    rowIDs.add(y)
             
             # This for loop flattens    {destination: {router: cost}} 
             #                     to    {destination: [cost1, cost2, ...}]} by router
             temp = []
             for m in headers:
-                for n in rowIDs:
+                for n in headers:
                     temp.append(r_table[m][n])
                 r_table[m] = temp
                 temp = []
             # Add the router name to the header list
+            rowIDs = headers
             headers = ['*' + self.name + '*'] + headers
             # pretty print via tabular
             print(tabulate(r_table, headers, showindex=rowIDs, tablefmt="fancy_grid"))
@@ -251,7 +252,9 @@ class Router:
     def send_routes(self, i):
         # TODO: Send out a routing table update
         #create a routing table update packet
-        p = NetworkPacket(0, 'control', 'DUMMY_ROUTING_TABLE')
+        routing_table_S = str(self.rt_tbl_D)
+        #source = 
+        p = NetworkPacket(0, 'control', routing_table_S)
         try:
             print('%s: sending routing update "%s" from interface %d' % (self, p, i))
             self.intf_L[i].put(p.to_byte_S(), 'out', True)
@@ -263,6 +266,14 @@ class Router:
     ## forward the packet according to the routing table
     #  @param p Packet containing routing information
     def update_routes(self, p, i):
+        neighbor_table = eval(p.data_S)
+
+        # for destination in self.N:
+        #     for router in self.N:
+        #         self.rt_tbl_D[destination][router] = min()
+            
+        # r_table[self.name].update({self.name: 0})
+    
         #TODO: add logic to update the routing tables and
         # possibly send out routing updates
         print('%s: Received routing update %s from interface %d' % (self, p, i))
