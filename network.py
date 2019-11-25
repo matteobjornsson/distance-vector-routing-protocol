@@ -252,9 +252,15 @@ class Router:
     def send_routes(self, i):
         # TODO: Send out a routing table update
         #create a routing table update packet
-        routing_table_S = str(self.rt_tbl_D)
-        #source = 
-        p = NetworkPacket(0, 'control', routing_table_S)
+
+        # send this node's distance vector to other routers
+        distance_vector = {}
+        for node in self.N:
+            cost_to_node = self.rt_tbl_D[node][self.name]
+            distance_vector.update({node: {self.name: cost_to_node}})
+
+        distance_vector_S = str(distance_vector)
+        p = NetworkPacket(0, 'control', distance_vector_S)
         try:
             print('%s: sending routing update "%s" from interface %d' % (self, p, i))
             self.intf_L[i].put(p.to_byte_S(), 'out', True)
@@ -266,14 +272,15 @@ class Router:
     ## forward the packet according to the routing table
     #  @param p Packet containing routing information
     def update_routes(self, p, i):
-        neighbor_table = eval(p.data_S)
+        neighbor_vector = eval(p.data_S)
+        neighbor = next(iter(neighbor_vector[self.N[0]]))
 
-        # for destination in self.N:
-        #     for router in self.N:
-        #         self.rt_tbl_D[destination][router] = min()
-            
-        # r_table[self.name].update({self.name: 0})
-    
+        # add neighbor's distance vector to this routing table
+        for node in self.N:
+            self.rt_tbl_D[node].update({neighbor: neighbor_vector[node][neighbor]})
+
+        # determine if added neighbor vector will change self distance vector
+
         #TODO: add logic to update the routing tables and
         # possibly send out routing updates
         print('%s: Received routing update %s from interface %d' % (self, p, i))
