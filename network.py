@@ -144,14 +144,17 @@ class Router:
         self.intf_L = [Interface(max_queue_size) for _ in range(len(cost_D))]
         #save neighbors and interfeces on which we connect to them
         self.cost_D = cost_D    # {neighbor: {interface: cost}}
+        self.neighbors = []
+        for neighbor in cost_D:
+            self.neighbors.append(neighbor)
 
-        #TODO: set up the routing table for connected hosts
         self.rt_tbl_D = {}     # {destination: {router: cost}}
         self.N = []
  
 
     def update_network_nodes(self, N, R):
         self.N = N
+        
 
 
     def initialize_routing_table(self): 
@@ -279,11 +282,34 @@ class Router:
         for node in self.N:
             self.rt_tbl_D[node].update({neighbor: neighbor_vector[node][neighbor]})
 
-        # # save current distance vector
-        # current_distance_vector = {}
-        # for node in self.N:
-        #     cost_to_node = self.rt_tbl_D[node][self.name]
-        #     current_distance_vector.update({node: {self.name: cost_to_node}})
+        # save current distance vector
+        current_distance_vector = {}
+        for node in self.N:
+            cost_to_node = self.rt_tbl_D[node][self.name]
+            current_distance_vector.update({node: {self.name: cost_to_node}})
+
+        name = self.name
+        table = self.rt_tbl_D
+        for node in self.N:
+            for neighbor in self.neighbors:
+                D_to_node_from_self = table[node][name]
+                cost_to_neighbor = self.cost_D[neighbor][next(iter(self.cost_D[neighbor]))]
+                # print(name, neighbor, cost_to_neighbor)
+                D_to_node_from_neighbor = table[node][neighbor]
+                new_Distance = min(D_to_node_from_self, cost_to_neighbor + D_to_node_from_neighbor)
+                if D_to_node_from_self != new_Distance:
+                    self.rt_tbl_D[node][name] = new_Distance
+
+        self.print_routes()
+
+        new_distance_vector = {}
+        for node in self.N:
+            cost_to_node = self.rt_tbl_D[node][self.name]
+            new_distance_vector.update({node: {self.name: cost_to_node}})
+        
+        if new_distance_vector != current_distance_vector:
+            for neighbor in self.neighbors: 
+                self.send_routes(next(iter(self.cost_D[neighbor])))
 
         # # evaluate updated distance vector
         # updated_distance_vector = {}
