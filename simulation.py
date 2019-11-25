@@ -3,6 +3,7 @@ import link
 import threading
 from time import sleep
 import sys
+from typing import *
 
 ##configuration parameters
 router_queue_size = 0 #0 means unlimited
