@@ -2,7 +2,11 @@ import queue
 import threading
 from tabulate import tabulate
 import copy
+<<<<<<< HEAD
 from numpy import inf
+=======
+from typing import *
+>>>>>>> ea8ff643384be0c00b0ea1931685bde447b3696e
 
 
 ## wrapper class for a queue of packets
@@ -136,13 +140,14 @@ class Router:
     ##@param name: friendly router name for debugging
     # @param cost_D: cost table to neighbors {neighbor: {interface: cost}}
     # @param max_queue_size: max queue length (passed to Interface)
-    def __init__(self, name, cost_D, max_queue_size):
+    def __init__(self, name: str, cost_D: Dict, max_queue_size):
         self.stop = False #for thread termination
         self.name = name
         #create a list of interfaces
         self.intf_L = [Interface(max_queue_size) for _ in range(len(cost_D))]
         #save neighbors and interfeces on which we connect to them
         self.cost_D = cost_D    # {neighbor: {interface: cost}}
+
         #TODO: set up the routing table for connected hosts
         self.rt_tbl_D = {}     # {destination: {router: cost}}
        
