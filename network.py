@@ -279,7 +279,21 @@ class Router:
         for node in self.N:
             self.rt_tbl_D[node].update({neighbor: neighbor_vector[node][neighbor]})
 
-        # determine if added neighbor vector will change self distance vector
+        # # save current distance vector
+        # current_distance_vector = {}
+        # for node in self.N:
+        #     cost_to_node = self.rt_tbl_D[node][self.name]
+        #     current_distance_vector.update({node: {self.name: cost_to_node}})
+
+        # # evaluate updated distance vector
+        # updated_distance_vector = {}
+        # possible_costs=[]
+        # rt = self.rt_tbl_D
+        # nm = self.nameij
+        # for node in self.N:
+        #     possible_costs.append(rt.)
+            
+            
 
         #TODO: add logic to update the routing tables and
         # possibly send out routing updates
