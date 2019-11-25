@@ -147,16 +147,12 @@ class Router:
 
         #TODO: set up the routing table for connected hosts
         self.rt_tbl_D = {}     # {destination: {router: cost}}
-       
-        self.print_routes()
         self.N = []
         self.R = []
 
     def update_network_nodes(self, N, R):
         self.N = N
         self.R = R
-        print(N)
-        print(R)
 
     def initialize_routing_table(self): 
         r_table = {}
@@ -166,17 +162,14 @@ class Router:
             for router in self.R:
                 r_table[node].update({router: inf})
 
-        print(r_table)
-
         for dest_key, intf_dict in self.cost_D.items():
             cost = intf_dict[next(iter(intf_dict))]
             r_table[dest_key].update({self.name : cost})
-            print(r_table)
         r_table[self.name].update({self.name: 0})
-
 
         print('%s: Initialized routing table' % self)
         self.rt_tbl_D = r_table
+        self.print_routes()
 
 
 
