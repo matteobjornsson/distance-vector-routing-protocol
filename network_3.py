@@ -116,7 +116,7 @@ class Host:
     def udt_receive(self):
         pkt_S = self.intf_L[0].get('in')
         if pkt_S is not None:
-            print('%s: received packet "%s"' % (self, pkt_S))
+            print('\n%s: received packet "%s"' % (self, pkt_S))
        
     ## thread target for the host to keep receiving data
     def run(self):
@@ -181,12 +181,6 @@ class Router:
         self.rt_tbl_D = r_table
         self.print_routes()
 
-
-
-    # temporary method to use until we get "update routes" working
-    def temp_routes_set_method(self, rt_tbl_D):
-        self.rt_tbl_D = rt_tbl_D
-    
         
     ## Print routing table
     def print_routes(self):
@@ -213,10 +207,10 @@ class Router:
 
             # Add the router name to the header list
             headers = ['*' + self.name + '*'] + headers
-            
+            print(r_table)
             # pretty print via tabular
-            print(tabulate(r_table, headers, showindex=rowIDs, tablefmt="fancy_grid"))
-            print('\n')
+            print(tabulate(r_table, headers, showindex=rowIDs, tablefmt="fancy_grid")+ '\n')
+
 
 
     ## called when printing the object
@@ -320,7 +314,7 @@ class Router:
         # shortening some variables for ease of use
         name = self.name
         table = self.rt_tbl_D
-
+        neighbors2 = self.neighbors + [name]
         # for each node in the network evaluate if there is a shorter path to that node from self router neighbors. 
         for node in self.N:
             for neighbor in self.neighbors:
