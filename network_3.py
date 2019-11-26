@@ -204,9 +204,8 @@ class Router:
 
             # Add the router name to the header list
             headers = ['*' + self.name + '*'] + headers
-            print(r_table)
-            # pretty print via tabular
 
+            # pretty print via tabular
             print(tabulate(r_table, headers, showindex=rowIDs, tablefmt="fancy_grid")+ '\n')
 
 
@@ -306,8 +305,6 @@ class Router:
                     #select the minimum of the two
                     new_Distance = min(D_to_node_from_self, cost_to_neighbor + D_to_node_from_neighbor)
                     # if the cost has changed, update routing table
-                    print('Distance from %s to %s: %f. cost to neighbor %s: %f. Distance from neighbor %s to node %s: %f' % \
-                        (self, node, D_to_node_from_self, neighbor, cost_to_neighbor, neighbor, node, D_to_node_from_neighbor))
                     if D_to_node_from_self != new_Distance:
                         self.rt_tbl_D[node][name] = new_Distance
         self.print_routes()

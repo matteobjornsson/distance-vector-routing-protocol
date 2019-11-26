@@ -66,8 +66,6 @@ if __name__ == '__main__':
         if isinstance(item, network.Router):
             item.update_network_nodes(N,R)
             item.initialize_routing_table()
-    
-
 
 
     #create a Link Layer to keep track of links between network nodes
@@ -82,8 +80,6 @@ if __name__ == '__main__':
     link_layer.add_link(link.Link(router_c, 1, router_d, 1))
     link_layer.add_link(link.Link(router_d, 2, host_2, 0))
 
-    
-    
     
     #start all the objects
     thread_L = []
