@@ -9,7 +9,7 @@ from typing import *
 
 ##configuration parameters
 router_queue_size = 0 #0 means unlimited
-simulation_time = 1   #give the network sufficient time to execute transfers
+simulation_time = 40   #give the network sufficient time to execute transfers
 
 if __name__ == '__main__':
     object_L = [] #keeps track of objects, so we can kill their threads at the end
@@ -21,7 +21,7 @@ if __name__ == '__main__':
     object_L.append(host_2)
     
     #create routers and cost tables for reaching neighbors
-    cost_D = {'H1': {0: 1}, 'RB': {1: 7}, 'RC': {2: 1}} # {neighbor: {interface: cost}}
+    cost_D = {'H1': {0: 1}, 'RB': {1: 1}, 'RC': {2: 1}} # {neighbor: {interface: cost}}
     #this routing table is a hardcoded dummy table for developing the printing method. 
     # rt_tbl_D = {'H1': {'RA': 1, 'RB': inf}, # {destination: {router: cost}}
     #             'H2': {'RA': inf, 'RB': inf}, 
@@ -33,7 +33,7 @@ if __name__ == '__main__':
     # router_a.temp_routes_set_method(rt_tbl_D) # here table is set manually
     object_L.append(router_a)
 
-    cost_D = {'RD': {1: 1}, 'RA': {0: 7}} # {neighbor: {interface: cost}}
+    cost_D = {'RD': {1: 1}, 'RA': {0: 1}} # {neighbor: {interface: cost}}
     # rt_tbl_D = {'H1': {'RA': inf, 'RB': inf}, # {destination: {router: cost}}
     #             'H2': {'RA': inf, 'RB': 3}, 
     #             'RA': {'RA': inf, 'RB': 1}, 
@@ -94,6 +94,8 @@ if __name__ == '__main__':
     link_layer.add_link(link.Link(router_b, 1, router_d, 0))
     link_layer.add_link(link.Link(router_c, 1, router_d, 1))
     link_layer.add_link(link.Link(router_d, 2, host_2, 0))
+
+    
     
     
     #start all the objects
@@ -107,6 +109,7 @@ if __name__ == '__main__':
     ## compute routing tables
     router_a.send_routes(1) #one update starts the routing process
     sleep(simulation_time)  #let the tables converge
+    print("slept")
     print("Converged routing tables")
     for obj in object_L:
         if str(type(obj)) == "<class 'network.Router'>":
