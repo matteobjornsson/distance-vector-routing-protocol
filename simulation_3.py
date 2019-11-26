@@ -33,7 +33,7 @@ if __name__ == '__main__':
     # router_a.temp_routes_set_method(rt_tbl_D) # here table is set manually
     object_L.append(router_a)
 
-    cost_D = {'RD': {1: 1}, 'RA': {0: 1}} # {neighbor: {interface: cost}}
+    cost_D = {'RD': {1: 1}, 'RA': {0: 20}} # {neighbor: {interface: cost}}
     # rt_tbl_D = {'H1': {'RA': inf, 'RB': inf}, # {destination: {router: cost}}
     #             'H2': {'RA': inf, 'RB': 3}, 
     #             'RA': {'RA': inf, 'RB': 1}, 
@@ -54,7 +54,7 @@ if __name__ == '__main__':
     
     object_L.append(router_c)
     
-    cost_D = {'RB': {0: 1}, 'RC': {1: 1}, 'H2': {2: 1}} # {neighbor: {interface: cost}}
+    cost_D = {'RB': {0: 20}, 'RC': {1: 1}, 'H2': {2: 1}} # {neighbor: {interface: cost}}
 
     router_d = network.Router(name='RD', 
                               cost_D = cost_D,
@@ -117,6 +117,7 @@ if __name__ == '__main__':
 
     #send packet from host 1 to host 2
     host_1.udt_send('H2', 'MESSAGE_FROM_H1')
+    host_2.udt_send('H1', 'REPLY_FROM_H2')
     sleep(simulation_time)
     
     
