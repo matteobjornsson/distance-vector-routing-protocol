@@ -30,7 +30,7 @@ if __name__ == '__main__':
     object_L.append(router_a)
 
     # ROUTER B, neighbors RA, RD
-    cost_D = {'RD': {1: 1}, 'RA': {0: 1}} # {neighbor: {interface: cost}}
+    cost_D = {'RD': {1: 1}, 'RA': {0: 20}} # {neighbor: {interface: cost}}
     router_b = network.Router(name='RB', 
                               cost_D = cost_D,
                               max_queue_size=router_queue_size)
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     object_L.append(router_c)
 
     # ROUTER D, neighbors RB, RC, H2    
-    cost_D = {'RB': {0: 1}, 'RC': {1: 1}, 'H2': {2: 1}} # {neighbor: {interface: cost}}
+    cost_D = {'RB': {0: 20}, 'RC': {1: 1}, 'H2': {2: 1}} # {neighbor: {interface: cost}}
     router_d = network.Router(name='RD', 
                               cost_D = cost_D,
                               max_queue_size=router_queue_size)
