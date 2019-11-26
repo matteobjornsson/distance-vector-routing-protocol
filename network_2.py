@@ -253,8 +253,11 @@ class Router:
 
             fwd_intf = None
 
+            # If destination is neighbor, just go there
             if p.dst in self.neighbors:
                 fwd_intf = list(self.cost_D[p.dst].keys())[0]
+            
+            # Find the router with the minium distance to target, and choose that interface
             else:
                 min_dist = inf
                 fwd_router = None
