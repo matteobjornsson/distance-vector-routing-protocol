@@ -21,11 +21,6 @@ if __name__ == '__main__':
     
     #create routers and cost tables for reaching neighbors
     cost_D = {'H1': {0: 1}, 'RB': {1: 1}} # {neighbor: {interface: cost}}
-    #this routing table is a hardcoded dummy table for developing the printing method. 
-    # rt_tbl_D = {'H1': {'RA': 1, 'RB': inf}, # {destination: {router: cost}}
-    #             'H2': {'RA': inf, 'RB': inf}, 
-    #             'RA': {'RA': 0, 'RB': inf}, 
-    #             'RB': {'RA': 1, 'RB': inf}}
     router_a = network.Router(name='RA', 
                               cost_D = cost_D,
                               max_queue_size=router_queue_size)
@@ -33,10 +28,6 @@ if __name__ == '__main__':
     object_L.append(router_a)
 
     cost_D = {'H2': {1: 3}, 'RA': {0: 1}} # {neighbor: {interface: cost}}
-    # rt_tbl_D = {'H1': {'RA': inf, 'RB': inf}, # {destination: {router: cost}}
-    #             'H2': {'RA': inf, 'RB': 3}, 
-    #             'RA': {'RA': inf, 'RB': 1}, 
-    #             'RB': {'RA': inf, 'RB': 0}}
     router_b = network.Router(name='RB', 
                               cost_D = cost_D,
                               max_queue_size=router_queue_size)
@@ -59,8 +50,6 @@ if __name__ == '__main__':
         if isinstance(item, network.Router):
             item.update_network_nodes(N,R)
             item.initialize_routing_table()
-    
-
 
 
     #create a Link Layer to keep track of links between network nodes

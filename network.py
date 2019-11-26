@@ -144,34 +144,38 @@ class Router:
         self.intf_L = [Interface(max_queue_size) for _ in range(len(cost_D))]
         #save neighbors and interfeces on which we connect to them
         self.cost_D = cost_D    # {neighbor: {interface: cost}}
-        self.neighbors = []
+        self.neighbors = []     # simple list of neighbors for each router
         for neighbor in cost_D:
             self.neighbors.append(neighbor)
 
-        self.rt_tbl_D = {}     # {destination: {router: cost}}
-        self.N = []
-        self.R = []
+        self.rt_tbl_D = {}  # {destination: {router: cost}}
+        self.N = []         # list of nodes in network
+        self.R = []         # list of routers in network
  
 
+    # used to inform routers of the nodes in the network. 
     def update_network_nodes(self, N, R):
         self.N = N
         self.R = R
         
 
-
+    # used to initialize routing table. Tables are initialized only knowing cost to neighbors. 
     def initialize_routing_table(self): 
         r_table = {}
 
+        # initialize table with all distances = to infinity
         for node in self.N:
             r_table.update({node: {}})
             for router in self.R:
                 r_table[node].update({router: inf})
 
+        # fill in each cost for known neighbor
         for dest_key, intf_dict in self.cost_D.items():
             cost = intf_dict[next(iter(intf_dict))]
             r_table[dest_key].update({self.name : cost})
-        r_table[self.name].update({self.name: 0})
 
+        #cost to self is 0
+        r_table[self.name].update({self.name: 0})
 
         print('%s: Initialized routing table' % self)
         self.rt_tbl_D = r_table
@@ -190,13 +194,13 @@ class Router:
         if not self.rt_tbl_D:
             print("\n Routing table is empty \n")
         else:
-            headers = []    # Table headers and rows will be all nodes on the network
-            rowIDs = self.R
+            headers = self.N    # Table headers will be all nodes on the network
+            rowIDs = self.R     # Row headers will be all routers on the network.
             r_table = copy.deepcopy(self.rt_tbl_D) # Table copied to be formatted
 
             # This for loop gathers the nodes and routers from the routing table
-            for x in r_table:
-                headers.append(x)
+            # for x in r_table:
+            #     headers.append(x)
             
             # This for loop flattens    {destination: {router: cost}} 
             #                     to    {destination: [cost1, cost2, ...}]} by router
@@ -206,11 +210,13 @@ class Router:
                     temp.append(r_table[m][n])
                 r_table[m] = temp
                 temp = []
+
             # Add the router name to the header list
-            
             headers = ['*' + self.name + '*'] + headers
+            
             # pretty print via tabular
             print(tabulate(r_table, headers, showindex=rowIDs, tablefmt="fancy_grid"))
+            print('\n')
 
 
     ## called when printing the object
@@ -255,17 +261,18 @@ class Router:
     ## send out route update
     # @param i Interface number on which to send out a routing update
     def send_routes(self, i):
-        # TODO: Send out a routing table update
-        #create a routing table update packet
 
         # send this node's distance vector to other routers
         distance_vector = {}
+        # collect the distance to each node from self (according to current table)
         for node in self.N:
             cost_to_node = self.rt_tbl_D[node][self.name]
             distance_vector.update({node: {self.name: cost_to_node}})
 
+        # flatten vector dict into string
         distance_vector_S = str(distance_vector)
         p = NetworkPacket(0, 'control', distance_vector_S)
+        # send backet
         try:
             print('%s: sending routing update "%s" from interface %d' % (self, p, i))
             self.intf_L[i].put(p.to_byte_S(), 'out', True)
@@ -289,22 +296,27 @@ class Router:
         for node in self.N:
             cost_to_node = self.rt_tbl_D[node][self.name]
             current_distance_vector.update({node: {self.name: cost_to_node}})
-
+        # shortening some variables for ease of use
         name = self.name
         table = self.rt_tbl_D
+
+        # for each node in the network evaluate if there is a shorter path to that node from self router neighbors. 
         for node in self.N:
             for neighbor in self.neighbors:
-                if neighbor in self.R:
-                    D_to_node_from_self = table[node][name]
+                if neighbor in self.R: # if node is a router
+                    # collect variables for equation for each y in N: D x (y) = min v {c(x, v) + D v (y)}
+                    D_to_node_from_self = table[node][name] #current cost
+                    #sum of next two variables is new possible cost
                     cost_to_neighbor = self.cost_D[neighbor][next(iter(self.cost_D[neighbor]))]
-                    # print(name, neighbor, cost_to_neighbor)
-                    D_to_node_from_neighbor = table[node][neighbor]
+                    D_to_node_from_neighbor = table[node][neighbor] 
+                    #select the minimum of the two
                     new_Distance = min(D_to_node_from_self, cost_to_neighbor + D_to_node_from_neighbor)
+                    # if the cost has changed, update routing table
                     if D_to_node_from_self != new_Distance:
                         self.rt_tbl_D[node][name] = new_Distance
-
         self.print_routes()
 
+        # compare the new distance vector and send updated vector to neighbors if new
         new_distance_vector = {}
         for node in self.N:
             cost_to_node = self.rt_tbl_D[node][self.name]
@@ -314,18 +326,6 @@ class Router:
             for neighbor in self.neighbors: 
                 self.send_routes(next(iter(self.cost_D[neighbor])))
 
-        # # evaluate updated distance vector
-        # updated_distance_vector = {}
-        # possible_costs=[]
-        # rt = self.rt_tbl_D
-        # nm = self.nameij
-        # for node in self.N:
-        #     possible_costs.append(rt.)
-            
-            
-
-        #TODO: add logic to update the routing tables and
-        # possibly send out routing updates
         print('%s: Received routing update %s from interface %d' % (self, p, i))
 
                 
