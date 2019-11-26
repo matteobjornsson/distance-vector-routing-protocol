@@ -21,46 +21,33 @@ if __name__ == '__main__':
     object_L.append(host_2)
     
     #create routers and cost tables for reaching neighbors
+
+    # ROUTER A, neighbors H1, RB, RC
     cost_D = {'H1': {0: 1}, 'RB': {1: 1}, 'RC': {2: 1}} # {neighbor: {interface: cost}}
-    #this routing table is a hardcoded dummy table for developing the printing method. 
-    # rt_tbl_D = {'H1': {'RA': 1, 'RB': inf}, # {destination: {router: cost}}
-    #             'H2': {'RA': inf, 'RB': inf}, 
-    #             'RA': {'RA': 0, 'RB': inf}, 
-    #             'RB': {'RA': 1, 'RB': inf}}
     router_a = network.Router(name='RA', 
                               cost_D = cost_D,
                               max_queue_size=router_queue_size)
-    # router_a.temp_routes_set_method(rt_tbl_D) # here table is set manually
     object_L.append(router_a)
 
-    cost_D = {'RD': {1: 1}, 'RA': {0: 20}} # {neighbor: {interface: cost}}
-    # rt_tbl_D = {'H1': {'RA': inf, 'RB': inf}, # {destination: {router: cost}}
-    #             'H2': {'RA': inf, 'RB': 3}, 
-    #             'RA': {'RA': inf, 'RB': 1}, 
-    #             'RB': {'RA': inf, 'RB': 0}}
+    # ROUTER B, neighbors RA, RD
+    cost_D = {'RD': {1: 1}, 'RA': {0: 1}} # {neighbor: {interface: cost}}
     router_b = network.Router(name='RB', 
                               cost_D = cost_D,
                               max_queue_size=router_queue_size)
-
-    # router_b.temp_routes_set_method(rt_tbl_D) # here table is set manually
     object_L.append(router_b)
     
+    # ROUTER C, neighbors RA, RD
     cost_D = {'RD': {1: 1}, 'RA': {0: 1}} # {neighbor: {interface: cost}}
-    
     router_c = network.Router(name='RC', 
                               cost_D = cost_D,
                               max_queue_size=router_queue_size)
-
-    
     object_L.append(router_c)
-    
-    cost_D = {'RB': {0: 20}, 'RC': {1: 1}, 'H2': {2: 1}} # {neighbor: {interface: cost}}
 
+    # ROUTER D, neighbors RB, RC, H2    
+    cost_D = {'RB': {0: 1}, 'RC': {1: 1}, 'H2': {2: 1}} # {neighbor: {interface: cost}}
     router_d = network.Router(name='RD', 
                               cost_D = cost_D,
                               max_queue_size=router_queue_size)
-
-    # router_b.temp_routes_set_method(rt_tbl_D) # here table is set manually
     object_L.append(router_d)
     
 
@@ -74,13 +61,11 @@ if __name__ == '__main__':
             N.append(item.name)
             R.append(item.name)
 
-
+    # update all routers, initialize routing table
     for item in object_L:
         if isinstance(item, network.Router):
             item.update_network_nodes(N,R)
             item.initialize_routing_table()
-    
-
 
 
     #create a Link Layer to keep track of links between network nodes
@@ -95,8 +80,6 @@ if __name__ == '__main__':
     link_layer.add_link(link.Link(router_c, 1, router_d, 1))
     link_layer.add_link(link.Link(router_d, 2, host_2, 0))
 
-    
-    
     
     #start all the objects
     thread_L = []

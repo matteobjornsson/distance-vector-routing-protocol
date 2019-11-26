@@ -192,9 +192,6 @@ class Router:
             rowIDs = self.R     # Row headers will be all routers on the network.
             r_table = copy.deepcopy(self.rt_tbl_D) # Table copied to be formatted
 
-            # This for loop gathers the nodes and routers from the routing table
-            # for x in r_table:
-            #     headers.append(x)
             
             # This for loop flattens    {destination: {router: cost}} 
             #                     to    {destination: [cost1, cost2, ...}]} by router
@@ -207,7 +204,7 @@ class Router:
 
             # Add the router name to the header list
             headers = ['*' + self.name + '*'] + headers
-            print(r_table)
+
             # pretty print via tabular
             print(tabulate(r_table, headers, showindex=rowIDs, tablefmt="fancy_grid")+ '\n')
 
@@ -299,12 +296,14 @@ class Router:
     ## forward the packet according to the routing table
     #  @param p Packet containing routing information
     def update_routes(self, p, i):
+        print('%s received d vector' % (self.name) + p.data_S )
         neighbor_vector = eval(p.data_S)
         neighbor = next(iter(neighbor_vector[self.N[0]]))
 
         # add neighbor's distance vector to this routing table
         for node in self.N:
             self.rt_tbl_D[node].update({neighbor: neighbor_vector[node][neighbor]})
+        self.print_routes
 
         # save current distance vector
         current_distance_vector = {}
@@ -314,7 +313,7 @@ class Router:
         # shortening some variables for ease of use
         name = self.name
         table = self.rt_tbl_D
-        neighbors2 = self.neighbors + [name]
+        neighbors2 = self.neighbors + [name]    
         # for each node in the network evaluate if there is a shorter path to that node from self router neighbors. 
         for node in self.N:
             for neighbor in self.neighbors:
