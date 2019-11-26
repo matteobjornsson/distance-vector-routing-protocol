@@ -94,6 +94,8 @@ if __name__ == '__main__':
     sleep(simulation_time)  #let the tables converge
     print("slept")
     print("Converged routing tables")
+
+    #print final tables
     for item in object_L:
         if isinstance(item, network.Router):
             item.print_routes()
