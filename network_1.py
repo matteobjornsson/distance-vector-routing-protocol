@@ -207,7 +207,7 @@ class Router:
 
             # Add the router name to the header list
             headers = ['*' + self.name + '*'] + headers
-            print(r_table)
+
             # pretty print via tabular
             print(tabulate(r_table, headers, showindex=rowIDs, tablefmt="fancy_grid")+ '\n')
 
