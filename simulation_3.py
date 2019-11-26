@@ -1,6 +1,6 @@
 #File for simulation3.py
-import network
-import link
+import network_3 as network
+import link_3 as link
 import threading
 from time import sleep
 import sys
