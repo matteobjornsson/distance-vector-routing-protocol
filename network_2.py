@@ -269,6 +269,8 @@ class Router:
                             fwd_router = routing_option[0]
 
                 fwd_intf = list(self.cost_D[fwd_router].keys())[0]
+            
+            print("Forwarding Through Interface: " + str(fwd_intf))
 
             self.intf_L[fwd_intf].put(p.to_byte_S(), 'out', True)
             print('%s: forwarding packet "%s" from interface %d to %d' % \
