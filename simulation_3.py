@@ -9,7 +9,7 @@ from typing import *
 
 ##configuration parameters
 router_queue_size = 0 #0 means unlimited
-simulation_time = 10   #give the network sufficient time to execute transfers
+simulation_time = 15   #give the network sufficient time to execute transfers
 
 if __name__ == '__main__':
     object_L = [] #keeps track of objects, so we can kill their threads at the end
@@ -94,9 +94,9 @@ if __name__ == '__main__':
     sleep(simulation_time)  #let the tables converge
     print("slept")
     print("Converged routing tables")
-    for obj in object_L:
-        if str(type(obj)) == "<class 'network.Router'>":
-            obj.print_routes()
+    for item in object_L:
+        if isinstance(item, network.Router):
+            item.print_routes()
 
     #send packet from host 1 to host 2
     host_1.udt_send('H2', 'MESSAGE_FROM_H1')
