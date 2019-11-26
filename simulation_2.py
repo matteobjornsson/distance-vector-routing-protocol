@@ -61,6 +61,10 @@ if __name__ == '__main__':
     link_layer.add_link(link.Link(router_a, 1, router_b, 0))
     link_layer.add_link(link.Link(router_b, 1, host_2, 0))
     
+
+    link_layer.add_link(link.Link(host_2, 0, router_b, 1))
+    link_layer.add_link(link.Link(router_b, 0, router_a, 1))
+    link_layer.add_link(link.Link(router_a, 0, host_1, 0))
     
     #start all the objects
     thread_L = []
@@ -72,6 +76,7 @@ if __name__ == '__main__':
     
     ## compute routing tables
     router_a.send_routes(1) #one update starts the routing process
+
     sleep(simulation_time)  #let the tables converge
     print("Converged routing tables")
     for obj in object_L:
@@ -80,6 +85,8 @@ if __name__ == '__main__':
 
     #send packet from host 1 to host 2
     host_1.udt_send('H2', 'MESSAGE_FROM_H1')
+    host_2.udt_send('H1', 'MESSAGE_FROM_H2')
+
     sleep(simulation_time)
     
     
