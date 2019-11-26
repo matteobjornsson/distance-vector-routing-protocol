@@ -52,6 +52,7 @@ if __name__ == '__main__':
             N.append(item.addr)
         elif isinstance(item, network.Router):
             N.append(item.name)
+            R.append(item.name)
 
 
     for item in object_L:

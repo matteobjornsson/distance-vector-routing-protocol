@@ -150,10 +150,12 @@ class Router:
 
         self.rt_tbl_D = {}     # {destination: {router: cost}}
         self.N = []
+        self.R = []
  
 
     def update_network_nodes(self, N, R):
         self.N = N
+        self.R = R
         
 
 
@@ -162,7 +164,7 @@ class Router:
 
         for node in self.N:
             r_table.update({node: {}})
-            for router in self.N:
+            for router in self.R:
                 r_table[node].update({router: inf})
 
         for dest_key, intf_dict in self.cost_D.items():
@@ -189,7 +191,7 @@ class Router:
             print("\n Routing table is empty \n")
         else:
             headers = []    # Table headers and rows will be all nodes on the network
-            rowIDs = []  
+            rowIDs = self.R
             r_table = copy.deepcopy(self.rt_tbl_D) # Table copied to be formatted
 
             # This for loop gathers the nodes and routers from the routing table
@@ -200,12 +202,12 @@ class Router:
             #                     to    {destination: [cost1, cost2, ...}]} by router
             temp = []
             for m in headers:
-                for n in headers:
+                for n in rowIDs:
                     temp.append(r_table[m][n])
                 r_table[m] = temp
                 temp = []
             # Add the router name to the header list
-            rowIDs = headers
+            
             headers = ['*' + self.name + '*'] + headers
             # pretty print via tabular
             print(tabulate(r_table, headers, showindex=rowIDs, tablefmt="fancy_grid"))
@@ -292,13 +294,14 @@ class Router:
         table = self.rt_tbl_D
         for node in self.N:
             for neighbor in self.neighbors:
-                D_to_node_from_self = table[node][name]
-                cost_to_neighbor = self.cost_D[neighbor][next(iter(self.cost_D[neighbor]))]
-                # print(name, neighbor, cost_to_neighbor)
-                D_to_node_from_neighbor = table[node][neighbor]
-                new_Distance = min(D_to_node_from_self, cost_to_neighbor + D_to_node_from_neighbor)
-                if D_to_node_from_self != new_Distance:
-                    self.rt_tbl_D[node][name] = new_Distance
+                if neighbor in self.R:
+                    D_to_node_from_self = table[node][name]
+                    cost_to_neighbor = self.cost_D[neighbor][next(iter(self.cost_D[neighbor]))]
+                    # print(name, neighbor, cost_to_neighbor)
+                    D_to_node_from_neighbor = table[node][neighbor]
+                    new_Distance = min(D_to_node_from_self, cost_to_neighbor + D_to_node_from_neighbor)
+                    if D_to_node_from_self != new_Distance:
+                        self.rt_tbl_D[node][name] = new_Distance
 
         self.print_routes()
 
