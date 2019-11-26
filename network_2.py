@@ -251,9 +251,6 @@ class Router:
             # forwarding table to find the appropriate outgoing interface
             # for now we assume the outgoing interface is 1
 
-            #self.rt_tbl_D
-            print("Destination: " + p.dst)
-
             fwd_intf = None
 
             if p.dst in self.neighbors:
@@ -270,8 +267,6 @@ class Router:
 
                 fwd_intf = list(self.cost_D[fwd_router].keys())[0]
             
-            print("Forwarding Through Interface: " + str(fwd_intf))
-
             self.intf_L[fwd_intf].put(p.to_byte_S(), 'out', True)
             print('%s: forwarding packet "%s" from interface %d to %d' % \
                 (self, p, i, fwd_intf))
